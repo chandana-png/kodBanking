@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { getPool } from '@/lib/db';
+import { getPool, ensureTables } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
     }
 
     const hashed = await bcrypt.hash(password, 10);
+    await ensureTables();
     const pool = getPool();
     await pool.execute(
       `INSERT INTO User (uid, uname, password, email, phone, role) VALUES (?, ?, ?, ?, ?, ?)`,

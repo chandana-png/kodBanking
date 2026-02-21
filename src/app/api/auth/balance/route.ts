@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import jwt from 'jsonwebtoken';
-import { getPool } from '@/lib/db';
+import { getPool, ensureTables } from '@/lib/db';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'change_this_secret';
 
@@ -19,6 +19,7 @@ export async function GET(request: NextRequest) {
     }
 
     const uname = payload.sub;
+    await ensureTables();
     const pool = getPool();
     const [rows]: any = await pool.execute(`SELECT balance FROM User WHERE uname = ?`, [uname]);
     const user = rows[0];

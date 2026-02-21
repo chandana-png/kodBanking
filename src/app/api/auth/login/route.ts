@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { getPool } from '@/lib/db';
+import { getPool, ensureTables } from '@/lib/db';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'change_this_secret';
 
@@ -12,6 +12,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing credentials' }, { status: 400 });
     }
 
+    await ensureTables();
     const pool = getPool();
     // fetch user by uname
     const [rows]: any = await pool.execute(`SELECT * FROM User WHERE uname = ?`, [uname]);
